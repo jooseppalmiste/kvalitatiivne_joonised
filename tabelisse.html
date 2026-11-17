@@ -1,0 +1,206 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Mehenäod ja andmete sisestamine</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 20px;
+      }
+      .sisestusvorm {
+        margin-bottom: 20px;
+        padding: 15px;
+        background-color: #f2f2f2;
+        border-radius: 6px;
+        display: inline-block;
+      }
+      .sisestusvorm label {
+        margin-right: 5px;
+        font-weight: bold;
+      }
+      .sisestusvorm input[type="text"],
+      .sisestusvorm input[type="number"] {
+        width: 100px;
+        padding: 5px;
+        margin-right: 15px;
+      }
+      .sisestusvorm input[type="button"],
+      .sisestusvorm button {
+        padding: 6px 12px;
+        cursor: pointer;
+      }
+      #olek {
+        margin-left: 10px;
+        font-style: italic;
+      }
+      .tahvel-konteiner {
+        overflow-x: auto;
+        margin-top: 10px;
+      }
+      canvas {
+        border: 1px solid #ccc;
+        background-color: #ffffff;
+      }
+    </style>
+    <script>
+      let g;
+      const veebiteenus = "";
+
+      let naoandmed = [];
+
+      // Funktsioon mehe näo joonistamiseks andmete põhjal
+      // x, y - näo keskpunkti koordinaadid
+      // d - näo läbimõõt
+      // habemekarvad - habemekarvade arv
+      // nimi - näo alla kirjutatav nimi
+      function mehenagu(x, y, d, habemekarvad, nimi){
+        let r = Number(d) / 2;
+
+        // Nägu
+        g.beginPath();
+        g.arc(x, y, r, 0, 2 * Math.PI);
+        g.stroke();
+
+        // Silmad
+        g.beginPath();
+        g.arc(x - r * 0.3, y - r * 0.2, 3, 0, 2 * Math.PI);
+        g.arc(x + r * 0.3, y - r * 0.2, 3, 0, 2 * Math.PI);
+        g.fill();
+
+        // Nina
+        g.beginPath();
+        g.moveTo(x, y - r * 0.1);
+        g.lineTo(x - 4, y + r * 0.2);
+        g.lineTo(x + 4, y + r * 0.2);
+        g.stroke();
+
+        // Suu
+        g.beginPath();
+        g.arc(x, y + r * 0.23, r * 0.25, 0, Math.PI);
+        g.stroke();
+
+        // Habemekarvad
+        for(let i = 0; i < Number(habemekarvad); i++){
+          let nurk = Math.PI * (0.12 + (i + 0.5) / Number(habemekarvad) * 0.76);
+          g.beginPath();
+          g.moveTo(x + Math.cos(nurk) * r * 0.85, y + Math.sin(nurk) * r * 0.85);
+          g.lineTo(x + Math.cos(nurk) * r * 1.2, y + Math.sin(nurk) * r * 1.2);
+          g.stroke();
+        }
+
+        // Nimi ja habemekarvade arv
+        g.textAlign = "center";
+        g.font = "14px Arial";
+        g.fillText(nimi + " (" + habemekarvad + ")", x, y + r + 35);
+      }
+
+      function joonista(){
+        let tahvel = document.getElementById("tahvel");
+        g = tahvel.getContext("2d");
+
+        // Kui andmeid on rohkem, laiendame vajadusel lõuendit
+        let vajalikLaius = Math.max(900, 100 + naoandmed.length * 165);
+        if (tahvel.width !== vajalikLaius) {
+          tahvel.width = vajalikLaius;
+        }
+
+        g.clearRect(0, 0, tahvel.width, tahvel.height);
+
+        // Joonistame iga rea andmete põhjal mehe näo
+        for(let i = 0; i < naoandmed.length; i++){
+          let d = naoandmed[i];
+          let x = 100 + i * 165;
+          let y = 140;
+          mehenagu(x, y, d[1], d[2], d[0]);
+        }
+      }
+
+      function uuendaAndmed(){
+        let olek = document.getElementById("olek");
+        if (olek) olek.innerText = "Laen andmeid...";
+
+        fetch(veebiteenus)
+          .then(d => d.json())
+          .then(andmed => {
+            loe(andmed);
+            if (olek) olek.innerText = "Andmed laaditud.";
+          })
+          .catch(err => {
+            console.error(err);
+            if (olek) olek.innerText = "Viga andmete laadimisel.";
+          });
+      }
+
+      function loe(andmed){
+        if (Array.isArray(andmed)) {
+          naoandmed = andmed;
+          joonista();
+        } else {
+          // Vajadusel küsime uuesti
+          uuendaAndmed();
+        }
+      }
+
+      function lisaAndmed(){
+        let nimi = document.getElementById("nimi").value.trim();
+        let suurus = document.getElementById("suurus").value.trim();
+        let habemekarvad = document.getElementById("habemekarvad").value.trim();
+        let olek = document.getElementById("olek");
+
+        if(!nimi || suurus === "" || habemekarvad === ""){
+          alert("Palun täida kõik väljad!");
+          return;
+        }
+
+        if (olek) olek.innerText = "Saadan andmeid tabelisse...";
+
+        // Päringu aadress andmete lisamiseks tabelisse
+        let url = veebiteenus + 
+          "?nimi=" + encodeURIComponent(nimi) +
+          "&suurus=" + encodeURIComponent(suurus) +
+          "&habemekarvad=" + encodeURIComponent(habemekarvad);
+
+        fetch(url)
+          .then(d => d.json())
+          .then(andmed => {
+            loe(andmed);
+            if (olek) olek.innerText = "Andmed tabelisse lisatud!";
+            // Tühjendame väljad
+            document.getElementById("nimi").value = "";
+            document.getElementById("suurus").value = "";
+            document.getElementById("habemekarvad").value = "";
+          })
+          .catch(err => {
+            console.error(err);
+            if (olek) olek.innerText = "Viga andmete saatmisel.";
+          });
+      }
+    </script>
+  </head>
+  <body onload="uuendaAndmed()">
+    <h1>Mehenäod</h1>
+    <p>Näo suurus ja habemekarvade arv</p>
+
+    <!-- Kasutaja sisestusvorm andmete saatmiseks tabelisse -->
+    <div class="sisestusvorm">
+      <label for="nimi">Nimi:</label>
+      <input type="text" id="nimi" placeholder="nt Mati">
+
+      <label for="suurus">Suurus:</label>
+      <input type="number" id="suurus" placeholder="nt 100">
+
+      <label for="habemekarvad">Habemekarvad:</label>
+      <input type="number" id="habemekarvad" placeholder="nt 20">
+
+      <input type="button" value="Lisa tabelisse" onclick="lisaAndmed()">
+      <input type="button" value="Uuenda" onclick="uuendaAndmed()">
+      <span id="olek"></span>
+    </div>
+
+    <div class="tahvel-konteiner">
+      <canvas id="tahvel" width="900" height="340">
+      </canvas>
+    </div>
+  </body>
+</html>
