@@ -1,0 +1,95 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Andmete põhjal mehenäod</title>
+	<script>
+	  let g;
+
+	  // Nägude andmed, mida saab CSV-failist uuendada
+	  let naoandmed = [
+		                 ["Mati", 100, 0],
+		                 ["Jüri", 110, 8],
+					   ];
+
+	  // Funktsioon mehe näo joonistamiseks andmete põhjal
+	  // x, y - näo keskpunkti koordinaadid
+	  // d - näo läbimõõt
+	  // habemekarvad - habemekarvade arv
+	  // nimi - näo alla kirjutatav nimi
+	  function mehenagu(x, y, d, habemekarvad, nimi){
+	    let r = Number(d) / 2;
+
+	    // Nägu
+	    g.beginPath();
+	    g.arc(x, y, r, 0, 2 * Math.PI);
+	    g.stroke();
+
+	    // Silmad
+	    g.beginPath();
+	    g.arc(x - r * 0.3, y - r * 0.2, 3, 0, 2 * Math.PI);
+	    g.arc(x + r * 0.3, y - r * 0.2, 3, 0, 2 * Math.PI);
+	    g.fill();
+
+	    // Nina
+	    g.beginPath();
+	    g.moveTo(x, y - r * 0.1);
+	    g.lineTo(x - 4, y + r * 0.2);
+	    g.lineTo(x + 4, y + r * 0.2);
+	    g.stroke();
+
+	    // Suu
+	    g.beginPath();
+	    g.arc(x, y + r * 0.23, r * 0.25, 0, Math.PI);
+	    g.stroke();
+
+	    // Habemekarvad
+	    for(let i = 0; i < Number(habemekarvad); i++){
+	      let nurk = Math.PI * (0.12 + (i + 0.5) / Number(habemekarvad) * 0.76);
+	      g.beginPath();
+	      g.moveTo(x + Math.cos(nurk) * r * 0.85, y + Math.sin(nurk) * r * 0.85);
+	      g.lineTo(x + Math.cos(nurk) * r * 1.2, y + Math.sin(nurk) * r * 1.2);
+	      g.stroke();
+	    }
+
+	    // Nimi ja habemekarvade arv
+	    g.textAlign = "center";
+	    g.font = "14px Arial";
+	    g.fillText(nimi + " (" + habemekarvad + ")", x, y + r + 35);
+	  }
+
+	  function joonista(){
+	    g = tahvel.getContext("2d");
+        g.clearRect(0, 0, 900, 260);
+	    // Joonistame iga rea andmete põhjal mehe näo
+	    for(let i = 0; i < naoandmed.length; i++){
+	      let d = naoandmed[i];
+	      let x = 100 + i * 165;
+	      let y = 120;
+	      mehenagu(x, y, d[1], d[2], d[0]);
+	    }
+	  }
+	  function uuendaAndmed(){
+		  fetch("naod.csv").then(d => d.text()).then(loe);
+	  }
+	  function loe(tekst){
+		  console.log(tekst);
+		  naoandmed=[]
+		  for(rida of tekst.split("\n")){
+		      if(!rida.trim()) continue;
+			  let m=rida.split(",")
+			  m[1]=parseInt(m[1]);
+			  m[2]=parseInt(m[2]);
+			  naoandmed.push(m);
+		  }
+		  joonista();
+	  }
+	</script>
+  </head>
+  <body onload="joonista()">
+    <h1>Mehenäod CSV-failist</h1>
+	<p>Näo suurus ja habemekarvade arv loetakse CSV-failist</p>
+	<canvas id="tahvel" width="900" height="260">
+	</canvas><br />
+	<input type="button" value="uuenda" onclick="uuendaAndmed()" />
+  </body>
+</html>
