@@ -11,7 +11,6 @@ Joonistamise ülesanne õppejõu näidete põhjal: https://github.com/jaagup/kva
 - `joonis6_kohalik.html` – andmete lugemine failist `naod.json` („uuenda” nupp).
 - `joonis7_csv.html` – andmete lugemine failist `naod.csv` („uuenda” nupp).
 - `index.html` – õppejõu `tabelisse.html` järgi veebitabelist lugemine ja sinna uute andmete lisamine.
-- `Code.gs` – Google Apps Scripti jaoks vajalik veebiteenuse kood.
 
 ## Google Sheetsi tabel
 
@@ -19,17 +18,12 @@ https://docs.google.com/spreadsheets/d/11loekvlAgL7ejYSfHVBsZ8K_1EYDoDHBwESeLUz4
 
 Tabelis on veerud `Nimi`, `Suurus` ja `Habemekarvad`. Algandmed on juba sisestatud.
 
-## Veebitabeliga ühendamise viimased sammud
+## Veebitabeli ühendamine
 
-1. Ava ülalolev Google Sheetsi tabel ja vali **Laiendused → Apps Script**.
-2. Asenda Apps Scripti redaktoris `Code.gs` kood selle repositooriumi `Code.gs` sisuga ning salvesta.
-3. Vali **Deploy → New deployment → Web app**. Käivitamine: **Execute as: Me**. Juurdepääs: **Anyone**. Kinnita vajalikud õigused.
-4. Kopeeri saadud veebirakenduse aadress (lõpus `/exec`).
-5. Asenda failis `index.html` rida `const veebiteenus = "";` sama aadressiga jutumärkide sees (jäta ülejäänud kood muutmata).
-6. Avalda GitHubis leht: **Settings → Pages → Deploy from a branch → main → /(root)**.
+Õppejõu Google Drive'i kaustas on veebitabeli näited:
+- [veeb1](https://drive.google.com/open?id=153aw_jF1DImHXOAA1WvtNBAZ22gJ_ZIHQr1bQ7cSZnDsloOLNbT-wmqE)
+- [veeb2](https://drive.google.com/open?id=1SNW_uVgwtFtrIRZ__21ZIH64tzPxhYXyDMEKuocs2WiMiGPyd12cC4Af)
 
-Seejärel loeb avaleht näod Google Sheetsist, veebivorm lisab tabelisse uue rea ning pärast lisamist joonistatakse näod uuesti.
+Enne veebitabeliga ühendamist tuleb nende näidete täpne kood üle vaadata. Näidete sisu ei õnnestunud veel lugeda. Failis `index.html` on veebiteenuse aadress praegu tühi, seega veebitabelist lugemine ja sinna lisamine veel ei tööta.
 
-**Märkus:** kuni Apps Script ei ole avaldatud ja selle aadress `index.html`-i lisatud, töötab avalehel nelja näoga näidisjoonis, kuid veebitabelisse lisamine ei tööta. Avalik veebiteenus võimaldab igal lehe kasutajal tabelisse ridu lisada.
-
-JSON- ja CSV-faili lugemise näited tuleb avada veebiserveri kaudu (näiteks GitHub Pagesis), mitte otse `file://` aadressilt.
+JSON- ja CSV-failide lugemise näited tuleb avada veebiserveri kaudu, mitte otse `file://` aadressilt.
