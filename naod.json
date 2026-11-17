@@ -1,0 +1,24 @@
+{
+  "andmed": [
+    {
+      "nimi": "Mati",
+      "suurus": 100,
+      "habemekarvad": 0
+    },
+    {
+      "nimi": "Jüri",
+      "suurus": 110,
+      "habemekarvad": 8
+    },
+    {
+      "nimi": "Peeter",
+      "suurus": 120,
+      "habemekarvad": 24
+    },
+    {
+      "nimi": "Andres",
+      "suurus": 95,
+      "habemekarvad": 44
+    }
+  ]
+}
