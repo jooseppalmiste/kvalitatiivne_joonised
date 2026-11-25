@@ -5,7 +5,6 @@
 	<script>
 	  let g;
 
-	  // Nägude andmed, mida saab CSV-failist uuendada
 	  let naoandmed = [
 		                 ["Sten", 100, 0],
 		                 ["Ben", 110, 8],
@@ -85,8 +84,6 @@
 	</script>
   </head>
   <body onload="joonista()">
-    <h1>Mehenäod CSV-failist</h1>
-	<p>Näo suurus ja habemekarvade arv loetakse CSV-failist</p>
 	<canvas id="tahvel" width="900" height="260">
 	</canvas><br />
 	<input type="button" value="uuenda" onclick="uuendaAndmed()" />
